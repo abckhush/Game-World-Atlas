@@ -5,6 +5,7 @@ const messageElement = document.getElementById('message');
 const timerElement = document.getElementById('timer');
 
 let places = [];
+let usedPlaces = new Set();
 let timer;
 let timerInterval;
 
@@ -16,11 +17,15 @@ async function fetchPlaces() {
         }
     });
     const data = await response.json();
-    return data.places; // Adjusted according to the JSON structure you provided earlier
+    return data.places;
 }
 
 function getRandomPlace() {
-    return places[Math.floor(Math.random() * places.length)];
+    const availablePlaces = places.filter(place => !usedPlaces.has(place.toLowerCase()));
+    if (availablePlaces.length === 0) {
+        return null;
+    }
+    return availablePlaces[Math.floor(Math.random() * availablePlaces.length)];
 }
 
 function isValidPlace(place) {
@@ -28,24 +33,24 @@ function isValidPlace(place) {
 }
 
 function getNextPlaceStartingWith(letter) {
-    for (let place of places) {
-        if (place[0].toLowerCase() === letter.toLowerCase()) {
-            return place;
-        }
+    const availablePlaces = places.filter(place => !usedPlaces.has(place.toLowerCase()) && place[0].toLowerCase() === letter.toLowerCase());
+    if (availablePlaces.length === 0) {
+        return null;
     }
-    return null;
+    return availablePlaces[Math.floor(Math.random() * availablePlaces.length)];
 }
 
 function startTimer() {
     clearInterval(timerInterval);
     timer = 30;
     timerElement.textContent = timer;
+    userInput.disabled = false;
     timerInterval = setInterval(() => {
         timer--;
         timerElement.textContent = timer;
         if (timer <= 0) {
             clearInterval(timerInterval);
-            messageElement.textContent = 'Time\'s up! You didn\'t enter a valid place in time.';
+            messageElement.textContent = 'Time\'s up! You didn\'t enter a valid place in time. Computer wins!';
             userInput.disabled = true;
         }
     }, 1000);
@@ -55,23 +60,32 @@ async function initializeGame() {
     try {
         places = await fetchPlaces();
         let currentPlace = getRandomPlace();
-        currentPlaceElement.textContent = currentPlace;
-        startTimer();
+        if (currentPlace) {
+            usedPlaces.add(currentPlace.toLowerCase());
+            currentPlaceElement.textContent = currentPlace;
+            startTimer();
+        } else {
+            messageElement.textContent = 'No more places available. User wins!';
+        }
 
         submitButton.addEventListener('click', () => {
             const userPlace = userInput.value.trim();
-            if (isValidPlace(userPlace)) {
-                const lastLetter = userPlace.slice(-1).toLowerCase(); // Updated to use userPlace's last letter
+            if (isValidPlace(userPlace) && !usedPlaces.has(userPlace.toLowerCase())) {
+                const lastLetter = userPlace.slice(-1).toLowerCase();
                 const nextPlace = getNextPlaceStartingWith(lastLetter);
                 if (nextPlace) {
+                    usedPlaces.add(userPlace.toLowerCase());
                     currentPlace = nextPlace;
+                    usedPlaces.add(currentPlace.toLowerCase());
                     currentPlaceElement.textContent = currentPlace;
                     userInput.value = '';
                     messageElement.textContent = '';
-                    startTimer(); // Reset the timer
+                    startTimer();
                 } else {
                     messageElement.textContent = 'No place found starting with "' + lastLetter.toUpperCase() + '".';
                 }
+            } else if (usedPlaces.has(userPlace.toLowerCase())) {
+                messageElement.textContent = '"' + userPlace + '" has already been used.';
             } else {
                 messageElement.textContent = '"' + userPlace + '" is not a city in India.';
             }
@@ -82,5 +96,4 @@ async function initializeGame() {
     }
 }
 
-// Initialize the game
 initializeGame();
