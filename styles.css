@@ -5,6 +5,7 @@ body {
     flex-direction: column;
     height: 100vh;
     font-family: 'Arial', sans-serif;
+    position: relative;
 }
 
 #game {
@@ -27,4 +28,26 @@ body {
     margin-top: 20px;
     font-size: 1.2em;
     color: red;
+}
+
+#timer-container {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 5px solid green;
+    border-radius: 50%;
+    font-size: 1.5em;
+}
+
+#timer-container.red {
+    border-color: red;
+}
+
+#timer {
+    color: black;
 }

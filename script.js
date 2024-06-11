@@ -3,6 +3,7 @@ const userInput = document.getElementById('user-input');
 const submitButton = document.getElementById('submit-button');
 const messageElement = document.getElementById('message');
 const timerElement = document.getElementById('timer');
+const timerContainer = document.getElementById('timer-container');
 
 let places = [];
 let usedPlaces = new Set();
@@ -45,12 +46,17 @@ function startTimer() {
     timer = 30;
     timerElement.textContent = timer;
     userInput.disabled = false;
+    timerContainer.classList.remove('red');
+
     timerInterval = setInterval(() => {
         timer--;
         timerElement.textContent = timer;
+        if (timer <= 5) {
+            timerContainer.classList.add('red');
+        }
         if (timer <= 0) {
             clearInterval(timerInterval);
-            messageElement.textContent = 'Time\'s up! You didn\'t enter a valid place in time. Computer wins!';
+            messageElement.textContent = 'Time\'s up! You didn\'t enter a valid place in time.';
             userInput.disabled = true;
         }
     }, 1000);
@@ -65,7 +71,7 @@ async function initializeGame() {
             currentPlaceElement.textContent = currentPlace;
             startTimer();
         } else {
-            messageElement.textContent = 'No more places available. User wins!';
+            messageElement.textContent = 'No more places available.';
         }
 
         submitButton.addEventListener('click', () => {
@@ -96,4 +102,5 @@ async function initializeGame() {
     }
 }
 
+// Initialize the game
 initializeGame();
