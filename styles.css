@@ -36,10 +36,19 @@ body {
     font-size: 1em;
 }
 
+#current-place {
+    color: rgb(47, 1, 48);
+    font-style: italic;
+}
+
 .btn {
     padding: 10px 20px;
     font-size: 1em;
     cursor: pointer;
+}
+
+.btn:hover{
+    background-color: aliceblue;
 }
 
 #message {

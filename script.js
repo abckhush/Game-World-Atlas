@@ -1,6 +1,7 @@
 const currentPlaceElement = document.getElementById('current-place');
 const userInput = document.getElementById('user-input');
 const submitButton = document.getElementById('submit-button');
+const resetButton = document.getElementById('reset-button');
 const messageElement = document.getElementById('message');
 const timerElement = document.getElementById('timer');
 const timerContainer = document.getElementById('timer-container');
@@ -62,6 +63,13 @@ function startTimer() {
     }, 1000);
 }
 
+function resetGame() {
+    usedPlaces.clear();
+    userInput.value = '';
+    messageElement.textContent = '';
+    initializeGame();
+}
+
 async function initializeGame() {
     try {
         places = await fetchPlaces();
@@ -96,6 +104,8 @@ async function initializeGame() {
                 messageElement.textContent = '"' + userPlace + '" is not a city in India.';
             }
         });
+
+        resetButton.addEventListener('click', resetGame);
     } catch (error) {
         console.error('Error fetching places:', error);
         messageElement.textContent = 'Error fetching places. Please try again later.';
