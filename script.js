@@ -43,7 +43,7 @@ function getNextPlaceStartingWith(letter) {
 
 function startTimer() {
     clearInterval(timerInterval);
-    timer = 30;
+    timer = 15;
     timerElement.textContent = timer;
     userInput.disabled = false;
     timerContainer.classList.remove('red');
